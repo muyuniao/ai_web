@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Services</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: white;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        input[type="text"], input[type="file"] {
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 80%;
+            max-width: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            margin-bottom: 20px;
+            padding: 10px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+        .delete-button:hover {
+            background-color: #e53935;
+        }
+        p {
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>AI Services</h1>
+
+    <!-- NLP 部分 -->
+    <h2>自然语言处理</h2>
+    <input type="text" id="nlpText" placeholder="输入文本进行 NLP">
+    <button onclick="callNlp()">提交</button>
+    <p id="nlpResult"></p>
+
+    <!-- 图像处理部分 -->
+    <h2>图像处理</h2>
+    <input type="file" id="imgFile">
+    <button onclick="callImg()">提交</button>
+    <p id="imgResult"></p>
+
+    <!-- 文字提取部分 -->
+    <h2>文字提取</h2>
+    <input type="file" id="wordFile">
+    <button onclick="callWord()">提交</button>
+    <p id="wordResult"></p>
+
+    <!-- 查询部分 -->
+    <h2>查询 OCR 内容</h2>
+    <button onclick="getAllContent()">查询所有内容</button>
+    <div class="table-header" id="tableHeader">
+        <span>处理记录</span>
+        <button class="delete-button" onclick="deleteAllContent()">删除全部</button>
+    </div>
+    <table id="allContentResult"></table>
+</div>
+
+<script>
+    // 调用 NLP API 的函数
+    async function callNlp() {
+        const text = document.getElementById('nlpText').value;
+        const response = await fetch('/nlp?text=' + encodeURIComponent(text));
+        document.getElementById('nlpResult').innerText = await response.text();
+    }
+
+    // 调用图像处理 API 的函数
+    async function callImg() {
+        const file = document.getElementById('imgFile').files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/img', {
+            method: 'POST',
+            body: formData
+        });
+        document.getElementById('imgResult').innerText = await response.text();
+    }
+
+    // 调用文字提取 API 的函数
+    async function callWord() {
+        const file = document.getElementById('wordFile').files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/word', {
+            method: 'POST',
+            body: formData
+        });
+        document.getElementById('wordResult').innerText = await response.text();
+    }
+
+    // 查询所有 OCR 内容的函数
+    async function getAllContent() {
+        try {
+            const response = await fetch('/getAllContent');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            const table = document.getElementById('allContentResult');
+            table.innerHTML = '<tr><th>ID</th><th>Content</th><th>操作</th></tr>';
+            data.forEach(item => {
+                const row = table.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                cell1.innerText = item.id;
+                cell2.innerText = item.content;
+                cell3.innerHTML = `<button class="delete-button" onclick="deleteContent(${item.id})">删除</button>`;
+            });
+            document.getElementById('tableHeader').style.display = 'flex'; // Show the table header
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
+    }
+
+    // 删除 OCR 内容的函数
+    async function deleteContent(id) {
+        const response = await fetch('/deleteContent?id=' + id, {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            await getAllContent();
+        } else {
+            alert('删除失败');
+        }
+    }
+
+    // 删除所有 OCR 内容的函数
+    async function deleteAllContent() {
+        const response = await fetch('/deleteAllContent', {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            await getAllContent();
+        } else {
+            alert('删除全部失败');
+        }
+    }
+</script>
+</body>
+</html>
