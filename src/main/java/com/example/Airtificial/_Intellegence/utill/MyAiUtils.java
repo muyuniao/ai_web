@@ -13,9 +13,9 @@ import java.util.HashMap;
 
 public class MyAiUtils {
 public static String  Img (MultipartFile file) throws IOException {
-    String APP_ID = "117053400";
-    String API_KEY = "nwLKArNMwvsaOVvES7ITg6p6";
-    String SECRET_KEY = "X6WFIklMjRtKyIuwDGpNacL6e56g9wGB";
+    String APP_ID = "your APP_ID";
+    String API_KEY = "your API_KEY";
+    String SECRET_KEY = "your SECRET_KEY";
     // 初始化一个AipImageClassify
     AipImageClassify client = new AipImageClassify(APP_ID, API_KEY, SECRET_KEY);
     // 调用接口
@@ -28,9 +28,9 @@ public static String  Img (MultipartFile file) throws IOException {
 }
     public static  String Word(MultipartFile file) throws IOException {
         //设置APPID/AK/SK
-            String APP_ID = "117053400";
-            String API_KEY = "nwLKArNMwvsaOVvES7ITg6p6";
-            String SECRET_KEY = "X6WFIklMjRtKyIuwDGpNacL6e56g9wGB";
+            String APP_ID = "your APP_ID";
+            String API_KEY = "your API_KEY";
+            String SECRET_KEY = "your SECRET_KEY";
             // 初始化一个AipOcr
             AipOcr client = new AipOcr(APP_ID, API_KEY, SECRET_KEY);
             // 调用接口
@@ -47,9 +47,9 @@ public static String  Img (MultipartFile file) throws IOException {
             return resB.toString();
     }
     public static String Nlp(String text){
-             String APP_ID = "117054739";
-             String API_KEY = "oGbuSzdPmtedOLDHW6dwYok5";
-             String SECRET_KEY = "2Mr0pNJ4JdHfnaiDpy0hPk0prrVXFq3G";
+             String APP_ID = "your APP_ID";
+             String API_KEY = "your API_KEY";
+             String SECRET_KEY = "your SECRET_KEY";
             // 初始化一个AipNlp
             AipNlp client = new AipNlp(APP_ID, API_KEY, SECRET_KEY);
             // 调用接口
